@@ -31,7 +31,7 @@ jobs:
       - name: Run chart-releaser
         uses: helm/chart-releaser-action@v1.6.0
         with:
-          charts_dir: './charts/BasicDeployment/hdp-server-deploy'
+          charts_dir: './charts/BasicDeployment'
         env:
           GITHUB_TOKEN: ${{ secrets.SECRETS_GITHUB_TOKEN }}
           CR_TOKEN: ${{ secrets.SECRETS_GITHUB_TOKEN }}
