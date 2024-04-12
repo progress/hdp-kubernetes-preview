@@ -13,8 +13,8 @@ By default, this project installs PostgreSQL, runs a SQL Script to setup the use
 When the volumes are mounted, and a prior database exists, PostgreSQL will skip running the init SQL script.
 
 In case of a need to use any other supported database like Oralce or SQLServer, configure .values.postgres.enabled to false.
-This will skip creating the init sql script and the installation of PostgreSQL database.
-In addition, config/hdpdeploy.properties need to be updated to the right account database information for a successful HDP installation.
+This will skip creating the init sql script as a config map and the installation of PostgreSQL database.
+In addition, config/hdpdeploy.properties need to be updated to the right account database details for a successful HDP installation.
 
 ==============
 Installing HDP
