@@ -1,0 +1,8 @@
+
+Access Hybrid Data Pipeline (HDP) using https://<EXTERNAL-IP>:8443>/hdpui or http://<EXTERNAL-IP>:8080>/hdpui
+
+To know the EXTERNAL-IP for the hdp-service, run the following command   
+kubectl get svc
+
+There are two users created by default named d2cadmin and d2cuser.
+The passwords are created as part of hdpsecrets with the keys hdpAdminPwd and hdpUserPwd. 

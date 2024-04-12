@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: hdpdeploy-configmap
+data:
+  hdpdeploy.properties: |-
+{{ tpl (.Files.Get "config/hdpdeploy.properties") . | indent 4 }}
