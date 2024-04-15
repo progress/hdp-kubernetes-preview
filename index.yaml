@@ -3,6 +3,21 @@ entries:
   hdp-server-deploy:
   - apiVersion: v2
     appVersion: 4.6.1
+    created: "2024-04-15T13:56:22.602540765Z"
+    dependencies:
+    - condition: postgres.enabled
+      name: postgresql
+      repository: https://charts.bitnami.com/bitnami
+      version: ^13.2.30
+    description: A Helm chart for Kubernetes
+    digest: 0375507e4e618a19973247a051415ca62498372ee7fdbd3d3709ab5802f517c2
+    name: hdp-server-deploy
+    type: application
+    urls:
+    - https://github.com/progress/hdp-kubernetes/releases/download/hdp-server-deploy-0.1.3/hdp-server-deploy-0.1.3.tgz
+    version: 0.1.3
+  - apiVersion: v2
+    appVersion: 4.6.1
     created: "2024-04-12T12:31:02.699252826Z"
     dependencies:
     - condition: postgres.enabled
@@ -31,4 +46,4 @@ entries:
     urls:
     - https://github.com/progress/hdp-kubernetes/releases/download/hdp-server-deploy-0.1.1/hdp-server-deploy-0.1.1.tgz
     version: 0.1.1
-generated: "2024-04-12T12:31:02.699262594Z"
+generated: "2024-04-15T13:56:22.602552538Z"
