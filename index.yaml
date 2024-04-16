@@ -1,5 +1,36 @@
 apiVersion: v1
 entries:
+  haproxy-deploy:
+  - apiVersion: v2
+    appVersion: 1.11.0
+    created: "2024-04-16T07:14:44.468882081Z"
+    dependencies:
+    - name: kubernetes-ingress
+      repository: https://haproxytech.github.io/helm-charts/
+      version: ^1.38.2
+    description: A Helm chart for Kubernetes that deploys haproxy
+    digest: dce9929b6e664c66ecf0dbae0486a0313a55e422319835647b67362cb9fad290
+    name: haproxy-deploy
+    type: application
+    urls:
+    - https://github.com/progress/hdp-kubernetes/releases/download/haproxy-deploy-0.0.1/haproxy-deploy-0.0.1.tgz
+    version: 0.0.1
+  hdp-lb-server-deploy:
+  - apiVersion: v2
+    appVersion: 4.6.1
+    created: "2024-04-16T07:14:44.598620425Z"
+    dependencies:
+    - condition: postgres.enabled
+      name: postgresql
+      repository: https://charts.bitnami.com/bitnami
+      version: ^13.2.30
+    description: A Helm chart for Kubernetes
+    digest: 0338e2930230247be230357eb7b17a4f2a03a92c864e5ec2db8c11a1839701dd
+    name: hdp-lb-server-deploy
+    type: application
+    urls:
+    - https://github.com/progress/hdp-kubernetes/releases/download/hdp-lb-server-deploy-0.1.0/hdp-lb-server-deploy-0.1.0.tgz
+    version: 0.1.0
   hdp-server-deploy:
   - apiVersion: v2
     appVersion: 4.6.1
@@ -46,4 +77,4 @@ entries:
     urls:
     - https://github.com/progress/hdp-kubernetes/releases/download/hdp-server-deploy-0.1.1/hdp-server-deploy-0.1.1.tgz
     version: 0.1.1
-generated: "2024-04-15T13:56:22.602552538Z"
+generated: "2024-04-16T07:14:44.598630043Z"
