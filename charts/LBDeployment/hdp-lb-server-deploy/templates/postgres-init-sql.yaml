@@ -1,0 +1,24 @@
+{{- if (.Values.postgres.enabled) }}
+# Creates the initial script to setup the PostgresSQL Database for HDP as an external Account Database
+# Expects the secrets to be created prior to setup the ConfigMap
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-initsql
+data:
+  init.sh: |-
+    set -e
+    export PGPASSWORD='{{ include "hdp-lb-server-deploy.secretValue" (list "default" "postgres-secrets" "postgres.db.password") | trim }}'
+    psql -v ON_ERROR_STOP=1 --username {{.Values.postgres.init.postgres_user}} --dbname {{.Values.postgres.init.dbname}} <<-EOSQL
+      create database {{.Values.postgres.hdp.dbname}};
+      create user {{ include "hdp-lb-server-deploy.secretValue" (list "default" "postgres-secrets" "postgres.hdp.pgadmin.user") | trim }} with PASSWORD '{{ include "hdp-lb-server-deploy.secretValue" (list "default" "postgres-secrets" "postgres.hdp.pgadmin.pwd") | trim }}';
+      create user {{ include "hdp-lb-server-deploy.secretValue" (list "default" "postgres-secrets" "postgres.hdp.pguser.user") | trim }} with PASSWORD '{{ include "hdp-lb-server-deploy.secretValue" (list "default" "postgres-secrets" "postgres.hdp.pguser.pwd") | trim }}';
+    EOSQL
+    psql -v ON_ERROR_STOP=1 --username {{.Values.postgres.init.postgres_user}} --dbname {{.Values.postgres.hdp.dbname}} <<-EOSQL
+      create schema {{.Values.postgres.hdp.schemaname}} authorization {{ include "hdp-lb-server-deploy.secretValue" (list "default" "postgres-secrets" "postgres.hdp.pgadmin.user") | trim }};
+      create extension citext with schema {{.Values.postgres.hdp.schemaname}};
+      grant usage on schema {{.Values.postgres.hdp.schemaname}} to {{ include "hdp-lb-server-deploy.secretValue" (list "default" "postgres-secrets" "postgres.hdp.pguser.user") | trim }};
+      alter user {{ include "hdp-lb-server-deploy.secretValue" (list "default" "postgres-secrets" "postgres.hdp.pgadmin.user") | trim }} SET search_path TO {{.Values.postgres.hdp.schemaname}};
+      alter user {{ include "hdp-lb-server-deploy.secretValue" (list "default" "postgres-secrets" "postgres.hdp.pguser.user") | trim }} SET search_path TO {{.Values.postgres.hdp.schemaname}};
+    EOSQL
+{{- end }}

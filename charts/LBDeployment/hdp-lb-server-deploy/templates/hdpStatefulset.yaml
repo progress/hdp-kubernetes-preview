@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: hdp
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hdp-server-app
+  template:
+    metadata:
+      labels:
+        app: hdp-server-app
+    spec:
+      initContainers:
+      - name: init-hdpdeployprops
+        image: {{.Values.hdp.image.repository}}
+        command: ["/bin/sh", "-c", "mkdir -p /hdpshare && cp /hdpdeployprops/hdpdeploy.properties /hdpshare/ && echo \'Config Map mounted and hdpdeploy.properties copied to /hdpshare!\'"]
+        volumeMounts:
+        - name: hdpdeployprops
+          mountPath: /hdpdeployprops
+        - name: common-storage
+          mountPath: /hdpshare
+      containers:
+        - name: kube-hdp
+          image: {{.Values.hdp.image.repository}}          
+          ports:
+            - name: http
+              containerPort: {{.Values.hdp.ports.http.containerPort}}
+            - name: https
+              containerPort: {{.Values.hdp.ports.https.containerPort}}
+          env:
+            - name: ACCEPT_EULA
+              value: "true"
+          volumeMounts:
+          - name: hdpdeployprops
+            mountPath: /hdpdeployprops
+          - name: common-storage
+            mountPath: {{ .Values.hdp.deploy.mountPath }}
+      volumes:
+        - name: common-storage
+          persistentVolumeClaim:
+            claimName: hdp-common-pvc
+        - name: hdpdeployprops
+          configMap:
+            name: hdpdeploy-configmap

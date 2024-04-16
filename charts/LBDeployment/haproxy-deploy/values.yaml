@@ -1,0 +1,8 @@
+kubernetes-ingress:
+  controller:
+    ingressClass: "haproxy"
+    service:
+      type: "LoadBalancer"
+      externalTrafficPolicy: Local
+    annotations:
+      service.beta.kubernetes.io/azure-load-balancer-health-probe-request-path: "/healthz"
