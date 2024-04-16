@@ -1,0 +1,45 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    haproxy.org/affinity: "true"
+    haproxy.org/cookie-persistence: HDP-SESSION
+    haproxy.org/forwarded-for: "true"
+    haproxy.org/load-balance: roundrobin
+    haproxy.org/timeout-check: 5m
+    haproxy.org/timeout-server: 5m
+    ingress.class: haproxy
+    #kubernetes.io/ingress.class: addon-http-application-routing
+  name: hdp-ingress
+  namespace: default
+spec:
+  ingressClassName: haproxy
+  rules:
+  - host: hdp.2565fbe255034c49a07b.eastus.aksapp.io
+    http:
+      paths:
+      - backend:
+          service:
+            name: hdp-server-app-headless
+            port:
+              number: 8080
+        path: /
+        pathType: Prefix      
+      - backend:
+          service:
+            name: hdp-notification-headless
+            port:
+              number: 11280
+        path: /connect/X_DataDirect_Notification_Server
+        pathType: Prefix
+      - backend:
+          service:
+            name: hdp-opa-headless
+            port:
+              number: 40501
+        path: /connect/opa_hdp-server-app-headless_40501
+        pathType: Prefix
+  #tls:
+  #- hosts:
+   # - xxxxxxxx
+   # secretName: hdp-tls-secret

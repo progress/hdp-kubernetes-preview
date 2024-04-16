@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    haproxy.org/check: "true"
+    haproxy.org/check-http: HEAD /
+    haproxy.org/check-interval: 5m
+    haproxy.org/route-acl: path_end -i /connect/X_DataDirect_Notification_Server
+  name: hdp-notification-headless
+  namespace: default
+spec:
+  ports:
+  - name: hdp-notification-headless
+    port: 11280
+    protocol: TCP
+    targetPort: 11280
+  selector:
+    app: hdp-server-app
+  sessionAffinity: None
+  type: ClusterIP
