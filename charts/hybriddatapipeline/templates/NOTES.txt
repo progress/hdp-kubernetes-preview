@@ -1,0 +1,17 @@
+Thank you for installing {{ .Chart.Name }}.
+
+Your release is named {{ .Release.Name }}.
+
+To get pods in the {{ .Release.Namespace }} namespace, try:
+
+    $ kubectl get pods --namespace={{ .Release.Namespace }}
+
+To get all services in the {{ .Release.Namespace }} namespace, try:
+
+    $ kubectl get services --namespace={{ .Release.Namespace }}
+
+To get ingress in the {{ .Release.Namespace }} namespace, try:
+
+    $ kubectl get ingress --namespace={{ .Release.Namespace }}
+
+Hybrid Data Pipeline can be accessed at https://{{ .Values.hdp.loadbalancer.hostName }}/
