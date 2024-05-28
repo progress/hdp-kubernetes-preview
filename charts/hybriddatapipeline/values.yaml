@@ -1,0 +1,172 @@
+## Values for Progress DataDirect Hybrid Data Pipeline(HDP) Server Deployment
+
+## Values used for Hybrid Data Pipeline(HDP) installation
+hdp:
+  ## Controls number of nodes to be deployed
+  replicaCount: 2
+  ## HDP Docker image details
+  image:
+    repository: 
+    tag: 
+    pullPolicy: IfNotPresent
+  imagePullSecrets: []
+
+  ## HDP Server License Key, leave this blank to install HDP in Evaluation Mode 
+  licenseKey:
+
+  ## Hybrid Data Pipeline Server Container load balancer hostname  
+  loadbalancer:
+    hostName: 
+
+  ## Controls On-Premise Connector components configuration on the HDP Server side
+  ## This should be enabled to establish On-premise datastore connections
+  onPremiseConnector:
+    enabled: true
+
+  ## HDP Server ports
+  ports:
+    hdpServer:
+      port: 8080
+      targetPort: 8080
+    opAccessor:
+      port: 40501
+      targetPort: 40501
+    notificationServer:
+      port: 11280
+      targetPort: 11280
+
+  ## HDP deploy properties file name
+  configurationFileName: hdpdeploy.properties
+
+  ## HDP Account database details, by default PostgreSQL is configured as account database
+  database:
+    hostName: postgresql
+    port: 5432
+    name: hdp
+    advancedOptions:
+
+  ## HDP Server Container persistence parameters
+  persistence:    
+    mountPath: /hdpshare
+    size: 1Gi
+    storageClassName: azurefile-csi
+
+  ## Update strategy for HDP Server and Helm chart upgrades
+  ## It is recommended to use OnDelete updateStrategy as HDP Server
+  ## bootstrap host (pod-0) needs to be upgraded first in the cluster and
+  ## OnDelete allows more control over the upgrade and recovery in case of failure.
+  updateStrategy:  
+    type: OnDelete
+
+  ## HDP Server Container resources parameters
+  resources:
+    requests:
+      memory: "4096Mi"
+      cpu: "2000m"
+    limits:
+      memory: "4096Mi"
+      cpu: "2000m"
+  
+  ## HDP Server Container probe parameters
+  livenessProbe:
+    enabled: true
+    initialDelaySeconds: 300
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 15
+    successThreshold: 1
+  
+  readinessProbe:
+    enabled: true
+    initialDelaySeconds: 10
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+    successThreshold: 1
+
+  services:
+    hdpService:
+      name: hdpserver
+      check: "true"
+      checkInterval: 5m
+      checkPath: /api/healthcheck
+    opAccessorService:
+      name: opaccessor
+      check: "true"
+      checkInterval: 5m
+      checkPath: /
+      aclPath: /connect/opa
+    notificationService:
+      name: notificationserver
+      check: "true"
+      checkInterval: 5m
+      checkPath: /
+      aclPath: /connect/X_DataDirect_Notification_Server
+
+## HAProxy Kubneretes Ingress Helm Chart Configuration
+haproxy:
+  kubernetesIngress:
+    enabled: true
+    ingressName: "hdp-ingress"
+  ## Configure TLS for HAProxy
+  ## Put the PEM-formatted SSL certificate into a secret and provide the secret name in the secretName field.
+  ## The PEM-formatted SSL certificate should contain the private key and the certificate. For example: cat certificate.pem private-key.pem > mycert.pem
+  ## To generate the secret in Kubernetes: kubectl create secret generic tls-cert --from-file=mycert.pem
+  tls:
+    enabled: false
+    secretName: "" # tls-cert
+    ## The name of the certificate file in the secret.
+    certFileName: "" # mycert.pem
+
+## Kubneretes Ingress Controller Configuration
+kubernetesingress:
+  controller:
+    ingressClass: haproxy
+    service:
+      type: "LoadBalancer"
+      externalTrafficPolicy: Local
+    annotations:
+      service.beta.kubernetes.io/azure-load-balancer-health-probe-request-path: "/healthz"
+
+## PostgreSQL Helm Chart Configuration
+## This will setup a new PostgreSQL database with required database and accounts needed for HDP Account Database 
+postgres:
+  enabled: true
+  init:
+    postgres_user: postgres
+    dbname: postgres
+  hdp:
+    schemaname: hdp
+    dbname: hdp
+postgresql:
+  global:
+    postgresql:
+      auth:
+        existingSecret: "postgres-secrets"
+        secretKeys:
+          adminPasswordKey: "postgres.db.password"
+  primary:
+    fullname: "postgresql"
+    initdb:
+      scriptsConfigMap: "postgres-initsql"
+    persistence:
+      size: 1Gi
+    resources:
+      limits: {}
+      requests:
+        memory: 256Mi
+        cpu: 250m
+    livenessProbe:
+      enabled: true
+      initialDelaySeconds: 30
+      periodSeconds: 10
+      timeoutSeconds: 5
+      failureThreshold: 6
+      successThreshold: 1
+    readinessProbe:
+      enabled: true
+      initialDelaySeconds: 5
+      periodSeconds: 10
+      timeoutSeconds: 5
+      failureThreshold: 6
+      successThreshold: 1
