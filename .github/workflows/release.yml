@@ -15,8 +15,7 @@ jobs:
     strategy:
       matrix:
         project:
-          - './charts/BasicDeployment'
-          - './charts/LBDeployment'     
+          - './charts/hybriddatapipeline'
     steps:
       - name: Checkout
         uses: actions/checkout@v3

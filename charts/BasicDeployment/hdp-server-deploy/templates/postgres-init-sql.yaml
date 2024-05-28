@@ -1,6 +1,6 @@
-{{- if (.Values.postgres.enabled) }}
 # Creates the initial script to setup the PostgresSQL Database for HDP as an external Account Database
 # Expects the secrets to be created prior to setup the ConfigMap
+{{- if (.Values.postgres.enabled) }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
