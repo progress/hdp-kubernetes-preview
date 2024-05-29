@@ -87,7 +87,7 @@ hdp:
 ```
 6. Install the Hybrid Data Pipeline Helm Chart with the above custom settings.
 ```
-helm install hdp-deploy hdp-kubernetes-preview/hybriddatapipeline --values values.yaml
+helm install hdp-deploy hdp/hybriddatapipeline --values values.yaml
 ```
 Once the installation is complete and the pod is in a running state, the Hybrid Data Pipeline can be accessed using hostname as configured for the hdp.loadbalancer.hostName in values.yaml
 ****
