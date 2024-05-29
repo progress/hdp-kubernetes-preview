@@ -23,13 +23,9 @@ This below example Helm Chart installation will create a two-node Hybrid Data Pi
 
 1. Add Hybrid Data Pipeline Repo to Helm:
 ```
-helm repo add hybriddatapipeline https://github.com/progress/hdp-kubernetes-preview
+helm repo add hybriddatapipeline https://progress.github.io/hdp-kubernetes-preview/
 ```
-2. Create a Kubernetes namespace:
-```
-kubectl create namespace hybriddatapipeline
-```
-3. The Hybrid Data Pipeline Helm Chart relies on two sub-charts, namely PostgreSQL and HAProxy.
+2. The Hybrid Data Pipeline Helm Chart relies on two sub-charts, namely PostgreSQL and HAProxy.
 
 To download the dependencies of the chart, execute:
 ```
@@ -37,13 +33,13 @@ helm dependency build
 ```
 This action will retrieve the chart to /charts.
 
-4. When installing the Helm Chart, the secrets for PostgreSQL and Hybrid Data Pipeline are required to be created. To create secrets:
+3. When installing the Helm Chart, the secrets for PostgreSQL and Hybrid Data Pipeline are required to be created. To create secrets:
 ```
 kubectl create secret secrets/hdp-secrets.yaml
 kubectl create secret secrets/postgres-secrets.yaml
 ```
 
-5. Adjust the settings in the values.yaml file to create a two-node Hybrid Data Pipeline cluster with a minimum resource allocation of 2 vCPUs, 8 GB RAM, and 100 GB storage for Hybrid Data Pipeline Server. For detailed guidance, refer to the Hybrid Data Pipeline Product Requirements Documentation.
+4. Adjust the settings in the values.yaml file to create a two-node Hybrid Data Pipeline cluster with a minimum resource allocation of 2 vCPUs, 8 GB RAM, and 100 GB storage for Hybrid Data Pipeline Server. For detailed guidance, refer to the Hybrid Data Pipeline Product Requirements Documentation.
 
 Utilize the latest Hybrid Data Pipeline Server Docker image for the new implementation as specified in the values.yaml file. To access the most recent image available, consult Progress ESD.
 
@@ -90,7 +86,7 @@ hdp:
 ```
 6. Install the Hybrid Data Pipeline Helm Chart with the above custom settings.
 ```
-helm install my-release hdp-kubernetes-preview/hybriddatapipeline --values values.yaml --namespace=hybriddatapipeline
+helm install hdp-deploy hdp-kubernetes-preview/hybriddatapipeline --values values.yaml
 ```
 Once the installation is complete and the pod is in a running state, the Hybrid Data Pipeline can be accessed using hostname as configured for the hdp.loadbalancer.hostName in values.yaml
 ****
