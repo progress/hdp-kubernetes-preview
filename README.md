@@ -21,9 +21,10 @@ This Helm-chart currently support Kubernetes 1.27 or later.
 
 This below example Helm Chart installation will create a two-node Hybrid Data Pipeline cluster with a "Default" group. A 1GB persistent volume, 2 vCPUs, and 4GB of RAM will be allocated for the pod.
 
-1. Add Hybrid Data Pipeline Repo to Helm:
+1. Add and Update Hybrid Data Pipeline Repo to Helm:
 ```
 helm repo add hybriddatapipeline https://progress.github.io/hdp-kubernetes-preview/
+helm repo update
 ```
 2. The Hybrid Data Pipeline Helm Chart relies on two sub-charts, namely PostgreSQL and HAProxy.
 
