@@ -23,7 +23,7 @@ This below example Helm Chart installation will create a two-node Hybrid Data Pi
 
 1. Add and Update Hybrid Data Pipeline Repo to Helm:
 ```
-helm repo add hybriddatapipeline https://progress.github.io/hdp-kubernetes-preview/
+helm repo add hdp https://progress.github.io/hdp-kubernetes-preview/
 helm repo update
 ```
 2. The Hybrid Data Pipeline Helm Chart relies on two sub-charts, namely PostgreSQL and HAProxy.
