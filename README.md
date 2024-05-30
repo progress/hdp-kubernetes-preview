@@ -1,17 +1,21 @@
 # hdp-kubernetes-preview
-Hybrid Data Pipeline HELM Charts
+This a Helm Repository hosting Hybrid Data Pipeline HELM Charts.
 
 # Hybrid Data Pipeline Kubernetes Helm Chart
 
-This repository contains a Helm Chart that can be used to deploy Hybrid Data Pipeline on a Kubernetes cluster. Below is a brief description of how to easily create a Hybrid Data Pipeline StatefulSet for development and testing.
+_hybriddatapipeline_ is the HELM chart project that deploys Hybrid Data Pipeline in an Azure Kubernetes Cluster with 2 HDP nodes using PostgreSQL as account database and HAProxy as a Loadbalancer.
 
 ## Getting Started
 
 ### Prerequisites
 
-[Helm](https://helm.sh/docs/intro/install/), [Kubectl](https://kubernetes.io/docs/tasks/tools/), [AzureCLI](https://learn.microsoft.com/en-us/cli/azure/install-azure-cli) must be installed locally in order to use this chart.
-
 In this release, the Helm chart is supported in Azure Kubernetes Service.
+In Azure Cloud, a Kubernetes Cluster service(AKS) and an Azure Container Registry(ACR) need to exist to deploy Hybrid Data Pipeline.
+ACR should have the HDP Docker image and the AKS should have access to ACR.
+
+On the client side, you should have the tools - 
+[Helm](https://helm.sh/docs/intro/install/), [Kubectl](https://kubernetes.io/docs/tasks/tools/), [AzureCLI](https://learn.microsoft.com/en-us/cli/azure/install-azure-cli) locally in order to use this chart.
+Configure the Kubectl to work against the AKS context.
 
 ### Kubernetes Version
 
@@ -21,73 +25,73 @@ This Helm-chart currently support Kubernetes 1.27 or later.
 
 This below example Helm Chart installation will create a two-node Hybrid Data Pipeline cluster with a "Default" group. A 1GB persistent volume, 2 vCPUs, and 4GB of RAM will be allocated for the pod.
 
-1. Add and Update Hybrid Data Pipeline Repo to Helm:
+1. Add and Update Hybrid Data Pipeline repo to Helm:
 ```
 helm repo add hdp https://progress.github.io/hdp-kubernetes-preview/
 helm repo update
 ```
-2. The Hybrid Data Pipeline Helm Chart relies on two sub-charts, namely PostgreSQL and HAProxy.
 
-To download the dependencies of the chart, execute:
-```
-helm dependency build
-```
-This action will retrieve the chart to /charts.
+2. When installing the Helm Chart, the secrets for PostgreSQL and Hybrid Data Pipeline are required to be created. 
 
-3. When installing the Helm Chart, the secrets for PostgreSQL and Hybrid Data Pipeline are required to be created. To create secrets:
+Refer to the sample secret files under _charts/hybriddatapipeline/secrets_ folder. Make a copy of these and provide your credentials in base64 format.
+
+To create secrets, run the following commands:
 ```
 kubectl create secret secrets/hdp-secrets.yaml
 kubectl create secret secrets/postgres-secrets.yaml
 ```
 
-4. Adjust the settings in the values.yaml file to create a two-node Hybrid Data Pipeline cluster with a minimum resource allocation of 2 vCPUs, 8 GB RAM, and 100 GB storage for Hybrid Data Pipeline Server. For detailed guidance, refer to the Hybrid Data Pipeline Product Requirements Documentation.
-
-Utilize the latest Hybrid Data Pipeline Server Docker image for the new implementation as specified in the values.yaml file. To access the most recent image available, consult Progress ESD.
-
-If necessary, push the Hybrid Data Pipeline Server Docker image to a container registry and update the image.repository and image.tag values accordingly.
-
-Should you desire HAProxy Load Balancer service for serving Hybrid Data Pipeline Server pod containers, perform these actions:
-    Specify an FQDN name in hdp.loadbalancer.hostName.
-    Set haproxy.kubernetesIngress.enabled to true (default is true).
-
+3. Refer to charts/hybriddatapipeline/values.yaml file for all the configurable properties.
+Following are basic properties that are required to setup the Hybrid Data Pipeline. You can make a copy of the following properites and name it as _myValues.yaml _
 ```
-## Progress DataDirect Hybrid Data Pipeline Server parameters
+## Values used for Hybrid Data Pipeline(HDP) installation
 hdp:
-
-  # Number of HDP nodes
+  ## Controls number of nodes to be deployed
   replicaCount: 2
 
-  ## Progress DataDirect Hybrid Data Pipeline Server image parameters
+  ## HDP Docker image details
   image:
     repository: 
     tag: 
     pullPolicy: IfNotPresent
-    
-  ## Progress DataDirect Hybrid Data Pipeline Server Container persistence parameters
-  persistence:    
-    mountPath: /hdpshare
-    size: 1Gi
-    storageClassName: azurefile-csi
-
-  ## Progress DataDirect Hybrid Data Pipeline Server Container resources parameters
-  resources:
-    requests:
-      memory: "4096Mi"
-      cpu: "2000m"
-    limits:
-      memory: "8096Mi"
-      cpu: "4000m"
-
-  ## Progress DataDirect Hybrid Data Pipeline Server License parameters
+  
+  ## HDP Server License Key, leaving this blank will install HDP in Evaluation Mode
   licenseKey:
   
-  ## Progress DataDirect Hybrid Data Pipeline Server Container load balancer parameters
+  ## Host name of the loadbalancer that would be in front of HDP nodes
   loadbalancer:
-    hostName: 
+    hostName:
+  ## Controls On-Premise Connector components configuration on the HDP Server side
+  ## This should be enabled to establish On-premise datastore connections
+  onPremiseConnector:
+    enabled: true
+
+## HAProxy Kubneretes Ingress Helm Chart Configuration
+haproxy:
+  kubernetesIngress:
+    enabled: true
+    ingressName: "hdp-ingress"
+  ## To Configure TLS for HAProxy, set enabled property to true.  Leaving the property as false will setup a self-signed certficate for the HAProxy.
+  ## Put the PEM-formatted SSL certificate into a secret and provide the secret name in the secretName field.
+  ## The PEM-formatted SSL certificate should contain the private key and the certificate. For example: cat certificate.pem private-key.pem > mycert.pem
+  ## To generate the secret in Kubernetes: kubectl create secret generic tls-cert --from-file=mycert.pem
+  tls:
+    enabled: false
+    secretName: "" # tls-cert
+    ## The name of the certificate file in the secret.
+    certFileName: "" # mycert.pem
 ```
-6. Install the Hybrid Data Pipeline Helm Chart with the above custom settings.
+6. Install the Hybrid Data Pipeline Helm Chart using myValues.yaml
 ```
-helm install hdp-deploy hdp/hybriddatapipeline --values values.yaml
+helm install hdp-deploy hdp/hybriddatapipeline -f myValues.yaml
 ```
-Once the installation is complete and the pod is in a running state, the Hybrid Data Pipeline can be accessed using hostname as configured for the hdp.loadbalancer.hostName in values.yaml
+Once the installation is complete and the pods are in a running state, list the running services using the following command -
+```
+kubectl get services
+```
+HAProxy service will have an external IP configured. This IP address should be configured to the DNS name to resolve the DNS correctly.
+Then the Hybrid Data Pipeline can be accessed using hostname as configured for the hdp.loadbalancer.hostName in myValues.yaml
 ****
+### Known Issues
+Currently the hybriddatapipeline should be installed in 'default' namespace. This will be addressed soon.
+
