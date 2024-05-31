@@ -37,8 +37,8 @@ Refer to the sample secret files under _charts/hybriddatapipeline/secrets_ folde
 
 To create secrets, run the following commands:
 ```
-kubectl create secret secrets/hdp-secrets.yaml
-kubectl create secret secrets/postgres-secrets.yaml
+kubectl create secret hdp-secrets.yaml
+kubectl create secret postgres-secrets.yaml
 ```
 
 3. Refer to charts/hybriddatapipeline/values.yaml file for all the configurable properties.
