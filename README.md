@@ -89,8 +89,8 @@ Once the installation is complete and the pods are in a running state, list the 
 ```
 kubectl get services
 ```
-HAProxy service will have an external IP configured. This IP address should be configured to the DNS name to resolve the DNS correctly.
-Then the Hybrid Data Pipeline can be accessed using hostname as configured for the hdp.loadbalancer.hostName in myValues.yaml
+KubernetesIngress of deployment type _LoadBalancer_ will have an external IP configured. This IP address should be configured to the DNS name to resolve the DNS correctly.
+The Hybrid Data Pipeline can then be accessed using hostname as configured for the hdp.loadbalancer.hostName in myValues.yaml
 ****
 ### Known Issues
 Currently the hybriddatapipeline should be installed in 'default' namespace. This will be addressed soon.
