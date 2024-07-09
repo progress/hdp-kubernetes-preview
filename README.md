@@ -37,12 +37,14 @@ Refer to the sample secret files under _charts/hybriddatapipeline/secrets_ folde
 
 To create secrets, run the following commands:
 ```
-kubectl create secret -f hdp-secrets.yaml
-kubectl create secret -f postgres-secrets.yaml
+kubectl create -f hdp-secrets.yaml
+kubectl create -f postgres-secrets.yaml
 ```
 
 3. Refer to charts/hybriddatapipeline/values.yaml file for all the configurable properties.
 Following are basic properties that are required to setup the Hybrid Data Pipeline. You can make a copy of the following properites and name it as _myValues.yaml _
+
+If you intend to enable SSL, create an additional secret with the certificate.pem and key.pem file. Refer to the comments in the following file.
 ```
 ## Values used for Hybrid Data Pipeline(HDP) installation
 hdp:
@@ -74,7 +76,7 @@ haproxy:
   ## To Configure TLS for HAProxy, set enabled property to true.  Leaving the property as false will setup a self-signed certficate for the HAProxy.
   ## Put the PEM-formatted SSL certificate into a secret and provide the secret name in the secretName field.
   ## The PEM-formatted SSL certificate should contain the private key and the certificate. For example: cat certificate.pem private-key.pem > mycert.pem
-  ## To generate the secret in Kubernetes: kubectl create secret generic tls-cert --from-file=mycert.pem
+  ## To generate the secret in Kubernetes: kubectl create secret tls tls-cert --cert=certificate.pem --key=key.pem
   tls:
     enabled: false
     secretName: "" # tls-cert
